@@ -300,7 +300,7 @@ const MultiChainPriceFeed = () => {
                 return (
                   <tr key={chain.id} className={data.status}>
                     <td className="network-cell">
-                      <span className="chain-icon">{chain.icon}</span>
+                      {/* <span className="chain-icon">{chain.icon}</span> */}
                       {chain.name}
                     </td>
                     <td className="price-cell">{data.price ? `$${data.price}` : "—"}</td>
