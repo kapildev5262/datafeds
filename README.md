@@ -1,0 +1,2 @@
+# datafeds
+This project is a Multi-Chain BNB/USD Price Feed and Arbitrage Finder built with React and Ethers.js. It fetches real-time BNB/USD prices across blockchains using Chainlink oracles, identifies arbitrage opportunities, and lets users customize trade amounts and profit thresholds. Ideal for traders exploring cross-chain price discrepancies.
