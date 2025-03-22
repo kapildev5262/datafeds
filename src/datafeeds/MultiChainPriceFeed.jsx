@@ -252,22 +252,16 @@ const MultiChainPriceFeed = () => {
 
       <div className="settings-panel">
         <div className="setting-control">
-          <label htmlFor="trade-amount">Trade Amount (USD):</label>
-          <select 
-            id="trade-amount" 
-            value={selectedTradeAmountIndex}
-            onChange={handleTradeAmountChange}
-            className="trade-amount-dropdown"
-          >
+          <label htmlFor="trade-amount">Trade Amount (USDT):</label>
+          <select id="trade-amount" value={selectedTradeAmountIndex} onChange={handleTradeAmountChange} className="trade-amount-dropdown">
             {tradeAmountOptions.map((amount, index) => (
-              <option key={index} value={index}>${amount.toLocaleString()}</option>
+              <option key={index} value={index}>
+                ${amount.toLocaleString()}
+              </option>
             ))}
           </select>
         </div>
-        <button 
-          className="refresh-settings-button" 
-          onClick={fetchPrices}
-        >
+        <button className="refresh-settings-button" onClick={fetchPrices}>
           Refresh Data
         </button>
       </div>
@@ -315,7 +309,9 @@ const MultiChainPriceFeed = () => {
               <div key={index} className="opportunity-card">
                 <h3>Opportunity #{index + 1}</h3>
                 <p>
-                  Buy {opportunity.bnbAmount.toFixed(4)} BNB on <span className="chain-buy">{opportunity.buyChain.name}</span> at <span className="price-value">${opportunity.buyPrice}</span> per BNB and sell on <span className="chain-sell">{opportunity.sellChain.name}</span> at <span className="price-value">${opportunity.sellPrice}</span> per BNB, earning a profit of <span className="profit-value">${opportunity.profit.toFixed(2)}</span> (<span className="profit-percentage">{opportunity.profitPercentage.toFixed(2)}%</span>).
+                  Buy {opportunity.bnbAmount.toFixed(4)} BNB on <span className="chain-buy">{opportunity.buyChain.name}</span> at <span className="price-value">${opportunity.buyPrice}</span> per BNB
+                  and sell on <span className="chain-sell">{opportunity.sellChain.name}</span> at <span className="price-value">${opportunity.sellPrice}</span> per BNB, earning a profit of{" "}
+                  <span className="profit-value">${opportunity.profit.toFixed(2)}</span> (<span className="profit-percentage">{opportunity.profitPercentage.toFixed(2)}%</span>).
                 </p>
                 <div className="opportunity-details">
                   <div className="detail">
