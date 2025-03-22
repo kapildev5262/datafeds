@@ -83,17 +83,33 @@
   color: #ccc;
 }
 
-.setting-control input {
+.setting-control input,
+.setting-control select {
   padding: 8px 12px;
   border: 1px solid #333;
   border-radius: 4px;
-  width: 120px;
+  width: 160px;
   background-color: #1a1a1a;
   color: #fff;
 }
 
-/* New apply settings button */
-.apply-settings-button {
+.trade-amount-dropdown {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  background-size: 16px;
+  padding-right: 28px;
+}
+
+.trade-amount-dropdown option {
+  background-color: #1a1a1a;
+  color: #fff;
+}
+
+/* Refresh settings button */
+.refresh-settings-button {
   padding: 8px 16px;
   background-color: #3b82f6;
   color: white;
@@ -104,7 +120,7 @@
   transition: background-color 0.2s;
 }
 
-.apply-settings-button:hover {
+.refresh-settings-button:hover {
   background-color: #2563eb;
 }
 
@@ -216,6 +232,12 @@
   border-radius: 8px;
   padding: 15px;
   border-left: 4px solid #4caf50;
+  transition: transform 0.2s ease;
+}
+
+.opportunity-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
 
 .opportunity-card h3 {
@@ -232,7 +254,7 @@
   color: #aaa;
 }
 
-/* New colored elements */
+/* Colored elements */
 .chain-buy {
   color: #3b82f6;
   font-weight: 600;
@@ -336,7 +358,7 @@
     align-items: flex-start;
   }
 
-  .apply-settings-button {
+  .refresh-settings-button {
     margin-top: 10px;
     width: 100%;
   }
