@@ -222,7 +222,7 @@ const MultiChainPriceFeed = () => {
           const timestamp = new Date(Number(roundData[3]) * 1000);
 
           newPriceData[chain.id] = {
-            price: parseFloat(formattedPrice).toFixed(6), // Changed to 6 decimal places
+            price: parseFloat(formattedPrice).toFixed(2),
             lastUpdate: timestamp.toLocaleTimeString(),
             status: "success",
             timestamp: timestamp,
