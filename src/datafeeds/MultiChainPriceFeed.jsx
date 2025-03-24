@@ -222,7 +222,7 @@ const MultiChainPriceFeed = () => {
           const timestamp = new Date(Number(roundData[3]) * 1000);
 
           newPriceData[chain.id] = {
-            price: parseFloat(formattedPrice).toFixed(2),
+            price: parseFloat(formattedPrice).toFixed(6), // Changed to 6 decimal places
             lastUpdate: timestamp.toLocaleTimeString(),
             status: "success",
             timestamp: timestamp,
@@ -334,8 +334,9 @@ const MultiChainPriceFeed = () => {
               <div key={index} className="opportunity-card">
                 <h3>Opportunity #{index + 1}</h3>
                 <p>
-                  Buy {opportunity.bnbAmount.toFixed(4)} BNB on <span className="chain-buy">{opportunity.buyChain.name}</span> at <span className="price-value">${opportunity.buyPrice}</span> per BNB
-                  and sell on <span className="chain-sell">{opportunity.sellChain.name}</span> at <span className="price-value">${opportunity.sellPrice}</span> per BNB.
+                  Buy {opportunity.bnbAmount.toFixed(6)} BNB on <span className="chain-buy">{opportunity.buyChain.name}</span> at{" "}
+                  <span className="price-value">${opportunity.buyPrice.toFixed(6)}</span> per BNB and sell on <span className="chain-sell">{opportunity.sellChain.name}</span> at{" "}
+                  <span className="price-value">${opportunity.sellPrice.toFixed(6)}</span> per BNB.
                 </p>
                 <div className="opportunity-details">
                   <div className="detail">
@@ -344,7 +345,7 @@ const MultiChainPriceFeed = () => {
                   </div>
                   <div className="detail">
                     <span className="label">BNB Amount:</span>
-                    <span className="value">{opportunity.bnbAmount.toFixed(4)} BNB</span>
+                    <span className="value">{opportunity.bnbAmount.toFixed(6)} BNB</span>
                   </div>
                   <div className="detail">
                     <span className="label">Buy Total:</span>
@@ -352,25 +353,25 @@ const MultiChainPriceFeed = () => {
                   </div>
                   <div className="detail">
                     <span className="label">Sell Total:</span>
-                    <span className="value">${(opportunity.bnbAmount * opportunity.sellPrice).toFixed(2)}</span>
+                    <span className="value">${(opportunity.bnbAmount * opportunity.sellPrice).toFixed(6)}</span>
                   </div>
                   <div className="detail">
                     <span className="label">Gross Profit:</span>
-                    <span className="value">${opportunity.grossProfit.toFixed(2)}</span>
+                    <span className="value">${opportunity.grossProfit.toFixed(6)}</span>
                   </div>
                   <div className="detail fees-detail">
                     <span className="label">Transaction Fees:</span>
-                    <span className="value fees-value">${opportunity.fees.totalFeesUSDT.toFixed(2)}</span>
-                    <div className="fees-breakdown">
-                      <div>Service Fee (0.2%): ${opportunity.fees.serviceFee.toFixed(2)}</div>
-                      <div>Bot Fee: ${opportunity.fees.botFee.toFixed(2)}</div>
-                      <div>Gas Fee: ${opportunity.fees.gasFeeUSDT.toFixed(2)}</div>
-                    </div>
+                    <span className="value fees-value">${opportunity.fees.totalFeesUSDT.toFixed(6)}</span>
+                    {/* <div className="fees-breakdown">
+                      <div>Service Fee (0.2%): ${opportunity.fees.serviceFee.toFixed(6)}</div>
+                      <div>Bot Fee: ${opportunity.fees.botFee.toFixed(6)}</div>
+                      <div>Gas Fee: ${opportunity.fees.gasFeeUSDT.toFixed(6)}</div>
+                    </div> */}
                   </div>
                   <div className="detail net-profit-detail">
                     <span className="label">Net Profit:</span>
-                    <span className="profit-percentage">({opportunity.netProfitPercentage.toFixed(2)}%)</span>
-                    <span className="value net-profit-value">${opportunity.netProfit.toFixed(2)}</span>
+                    <span className="profit-percentage">({opportunity.netProfitPercentage.toFixed(4)}%)</span>
+                    <span className="value net-profit-value">${opportunity.netProfit.toFixed(6)}</span>
                   </div>
                 </div>
               </div>
