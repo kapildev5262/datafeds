@@ -116,18 +116,35 @@ const chains = [
     pair: "BNB/USD",
     icon: "🟣",
   },
-  {
-    id: "scroll",
-    name: "Scroll",
-    rpcUrl: "https://rpc.scroll.io",
-    priceFeedAddress: "0x1AC823FdC79c30b1aB1787FF5e5766D6f29235E1",
-    pair: "BNB/USD",
-    icon: "📜",
-  },
 ];
 
 // Trade amount options
-const tradeAmountOptions = Array.from({ length: 20 }, (_, i) => (i + 1) * 1000);
+const tradeAmountOptions = Array.from({ length: 50 }, (_, i) => (i + 1) * 1000);
+
+// Fee calculator function
+const calculateArbitrageFees = (fundAmount) => {
+  // Validate input
+  if (fundAmount < 1000 || fundAmount > 50000) {
+    return { error: "Fund amount must be between 1000 and 50000 USDT" };
+  }
+
+  // Calculate individual fees
+  const serviceFee = fundAmount * 0.002; // 0.2% service fee
+  const botFee = 1.0; // Fixed 1 USDT bot fee per transaction
+  const gasFeeUSDT = 2.0; // Fixed 2 USDT gas fee per transaction
+
+  // Calculate total fees in USDT
+  const totalFeesUSDT = serviceFee + botFee + gasFeeUSDT;
+
+  return {
+    fundAmount: fundAmount,
+    serviceFee: serviceFee,
+    botFee: botFee,
+    gasFeeUSDT: gasFeeUSDT,
+    totalFeesUSDT: totalFeesUSDT,
+    totalFeesPercentage: (totalFeesUSDT / fundAmount) * 100,
+  };
+};
 
 const MultiChainPriceFeed = () => {
   const [priceData, setPriceData] = useState({});
@@ -135,9 +152,9 @@ const MultiChainPriceFeed = () => {
   const [lastUpdated, setLastUpdated] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
   const [arbitrageOpportunities, setArbitrageOpportunities] = useState([]);
-  const [minProfitThreshold, setMinProfitThreshold] = useState(0.1); // Minimum profit in USD to show opportunity
-  const [tradeAmount, setTradeAmount] = useState(1000); // Default trade amount in USD
-  const [selectedTradeAmountIndex, setSelectedTradeAmountIndex] = useState(0); // Default index (1000)
+  const [minProfitThreshold, setMinProfitThreshold] = useState(0.1);
+  const [tradeAmount, setTradeAmount] = useState(50000);
+  const [selectedTradeAmountIndex, setSelectedTradeAmountIndex] = useState(49);
 
   const calculateArbitrageOpportunities = (prices) => {
     const opportunities = [];
@@ -152,30 +169,38 @@ const MultiChainPriceFeed = () => {
           const buyPrice = parseFloat(prices[buyChain.id].price);
           const sellPrice = parseFloat(prices[sellChain.id].price);
 
-          // Calculate potential profit (ignoring gas fees and other costs)
           // Calculate BNB amount based on USD value
           const bnbAmount = tradeAmount / buyPrice;
-          
-          // Calculate profit in USD
-          const profit = bnbAmount * (sellPrice - buyPrice);
 
-          if (profit > minProfitThreshold) {
+          // Calculate gross profit in USD (before fees)
+          const grossProfit = bnbAmount * (sellPrice - buyPrice);
+
+          // Calculate fees for the entire arbitrage (based on trade amount)
+          const fees = calculateArbitrageFees(tradeAmount);
+
+          // Calculate net profit after deducting fees
+          const netProfit = grossProfit - fees.totalFeesUSDT;
+
+          // Only include opportunities that are profitable after fees
+          if (netProfit > 0) {
             opportunities.push({
               buyChain,
               sellChain,
               buyPrice,
               sellPrice,
-              profit,
+              grossProfit,
+              fees: fees,
+              netProfit,
               bnbAmount,
-              profitPercentage: (profit / tradeAmount) * 100,
+              netProfitPercentage: (netProfit / tradeAmount) * 100,
             });
           }
         }
       }
     }
 
-    // Sort by profit (highest first)
-    return opportunities.sort((a, b) => b.profit - a.profit);
+    // Sort by net profit (highest first)
+    return opportunities.sort((a, b) => b.netProfit - a.netProfit);
   };
 
   const fetchPrices = async () => {
@@ -262,7 +287,7 @@ const MultiChainPriceFeed = () => {
           </select>
         </div>
         <button className="refresh-settings-button" onClick={fetchPrices}>
-          Refresh Data
+          Refresh
         </button>
       </div>
 
@@ -302,7 +327,7 @@ const MultiChainPriceFeed = () => {
       </div>
 
       <div className="arbitrage-opportunities">
-        <h2>Arbitrage Opportunities</h2>
+        <h2>Arbitrage Opportunities (After Fees)</h2>
         {arbitrageOpportunities.length > 0 ? (
           <div className="opportunities-list">
             {arbitrageOpportunities.map((opportunity, index) => (
@@ -310,8 +335,7 @@ const MultiChainPriceFeed = () => {
                 <h3>Opportunity #{index + 1}</h3>
                 <p>
                   Buy {opportunity.bnbAmount.toFixed(4)} BNB on <span className="chain-buy">{opportunity.buyChain.name}</span> at <span className="price-value">${opportunity.buyPrice}</span> per BNB
-                  and sell on <span className="chain-sell">{opportunity.sellChain.name}</span> at <span className="price-value">${opportunity.sellPrice}</span> per BNB, earning a profit of{" "}
-                  <span className="profit-value">${opportunity.profit.toFixed(2)}</span> (<span className="profit-percentage">{opportunity.profitPercentage.toFixed(2)}%</span>).
+                  and sell on <span className="chain-sell">{opportunity.sellChain.name}</span> at <span className="price-value">${opportunity.sellPrice}</span> per BNB.
                 </p>
                 <div className="opportunity-details">
                   <div className="detail">
@@ -330,12 +354,30 @@ const MultiChainPriceFeed = () => {
                     <span className="label">Sell Total:</span>
                     <span className="value">${(opportunity.bnbAmount * opportunity.sellPrice).toFixed(2)}</span>
                   </div>
+                  <div className="detail">
+                    <span className="label">Gross Profit:</span>
+                    <span className="value">${opportunity.grossProfit.toFixed(2)}</span>
+                  </div>
+                  <div className="detail fees-detail">
+                    <span className="label">Transaction Fees:</span>
+                    <span className="value fees-value">${opportunity.fees.totalFeesUSDT.toFixed(2)}</span>
+                    <div className="fees-breakdown">
+                      <div>Service Fee (0.2%): ${opportunity.fees.serviceFee.toFixed(2)}</div>
+                      <div>Bot Fee: ${opportunity.fees.botFee.toFixed(2)}</div>
+                      <div>Gas Fee: ${opportunity.fees.gasFeeUSDT.toFixed(2)}</div>
+                    </div>
+                  </div>
+                  <div className="detail net-profit-detail">
+                    <span className="label">Net Profit:</span>
+                    <span className="profit-percentage">({opportunity.netProfitPercentage.toFixed(2)}%)</span>
+                    <span className="value net-profit-value">${opportunity.netProfit.toFixed(2)}</span>
+                  </div>
                 </div>
               </div>
             ))}
           </div>
         ) : (
-          <p className="no-opportunities">No profitable arbitrage opportunities found at current prices with the specified threshold.</p>
+          <p className="no-opportunities">No profitable arbitrage opportunities found after deducting fees.</p>
         )}
       </div>
     </div>
