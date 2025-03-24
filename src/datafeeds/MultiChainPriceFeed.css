@@ -407,3 +407,29 @@
     font-size: 12px;
   }
 }
+
+/* Add this to your MultiChainPriceFeed.css file */
+
+/* Animation for new opportunities - stays solid for 2 seconds then disappears */
+@keyframes highlightNew {
+  0% {
+    background-color: rgba(255, 81, 0, 0.3); /* Light yellow highlight */
+  }
+  90% {
+    background-color: rgba(255, 55, 0, 0.3); /* Maintain the highlight for most of the duration */
+  }
+  100% {
+    background-color: transparent;
+  }
+}
+
+/* Apply the animation when an opportunity is new */
+.opportunity-card.new-opportunity {
+  animation: highlightNew 2s ease-out;
+  background-color: rgba(255, 17, 0, 0.3); /* Initial background color */
+}
+
+/* Quick transition after the animation ends */
+.opportunity-card {
+  transition: background-color 0.1s ease-out;
+}

@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { ethers } from 'ethers';
-import './MultiChainPriceFeed.css';
+import React, { useState, useEffect, useRef } from "react";
+import { ethers } from "ethers";
+import "./MultiChainPriceFeed.css";
 
 // AggregatorV3Interface ABI - minimal ABI for price feed
 const aggregatorV3InterfaceABI = [
@@ -12,18 +12,18 @@ const aggregatorV3InterfaceABI = [
       { name: "answer", type: "int256" },
       { name: "startedAt", type: "uint256" },
       { name: "updatedAt", type: "uint256" },
-      { name: "answeredInRound", type: "uint80" }
+      { name: "answeredInRound", type: "uint80" },
     ],
     stateMutability: "view",
-    type: "function"
+    type: "function",
   },
   {
     inputs: [],
     name: "decimals",
     outputs: [{ name: "", type: "uint8" }],
     stateMutability: "view",
-    type: "function"
-  }
+    type: "function",
+  },
 ];
 
 // Chain configurations
@@ -102,7 +102,7 @@ const chains = [
   },
   {
     id: "optimism",
-    name: "OP Mainnet",
+    name: "OP",
     rpcUrl: "https://mainnet.optimism.io",
     priceFeedAddress: "0xD38579f7cBD14c22cF1997575eA8eF7bfe62ca2c",
     pair: "BNB/USD",
@@ -155,6 +155,10 @@ const MultiChainPriceFeed = () => {
   const [minProfitThreshold, setMinProfitThreshold] = useState(0.1);
   const [tradeAmount, setTradeAmount] = useState(50000);
   const [selectedTradeAmountIndex, setSelectedTradeAmountIndex] = useState(49);
+  const [newOpportunities, setNewOpportunities] = useState([]);
+
+  // Use ref to keep track of previous opportunities for comparison
+  const previousOpportunitiesRef = useRef([]);
 
   const calculateArbitrageOpportunities = (prices) => {
     const opportunities = [];
@@ -193,6 +197,7 @@ const MultiChainPriceFeed = () => {
               netProfit,
               bnbAmount,
               netProfitPercentage: (netProfit / tradeAmount) * 100,
+              id: `${buyChain.id}-${sellChain.id}`, // Add a unique identifier
             });
           }
         }
@@ -222,7 +227,7 @@ const MultiChainPriceFeed = () => {
           const timestamp = new Date(Number(roundData[3]) * 1000);
 
           newPriceData[chain.id] = {
-            price: parseFloat(formattedPrice).toFixed(2),
+            price: parseFloat(formattedPrice).toFixed(6),
             lastUpdate: timestamp.toLocaleTimeString(),
             status: "success",
             timestamp: timestamp,
@@ -244,7 +249,24 @@ const MultiChainPriceFeed = () => {
 
     // Calculate arbitrage opportunities
     const opportunities = calculateArbitrageOpportunities(newPriceData);
+
+    // Check for new opportunities by comparing with previous
+    const prevOpIds = (previousOpportunitiesRef.current || []).map((op) => op.id);
+    const newOps = opportunities.filter((op) => !prevOpIds.includes(op.id));
+
+    // Set new opportunities to highlight
+    if (newOps.length > 0) {
+      setNewOpportunities(newOps.map((op) => op.id));
+
+      // Clear highlighting after 2 seconds
+      setTimeout(() => {
+        setNewOpportunities([]);
+      }, 2000);
+    }
+
+    // Update opportunities state and reference
     setArbitrageOpportunities(opportunities);
+    previousOpportunitiesRef.current = opportunities;
 
     setLoading(false);
     setRefreshing(false);
@@ -266,7 +288,7 @@ const MultiChainPriceFeed = () => {
   return (
     <div className="multi-chain-price-feed">
       <div className="price-feed-header">
-        <h1>Cross Chain BNB/USDT Price Feeds</h1>
+        <h1>Cross Chain BNB/USDT</h1>
         <div className="refresh-info">
           <span>Last refresh: {lastUpdated || "Initializing..."}</span>
           <button className={`refresh-button ${refreshing ? "refreshing" : ""}`} onClick={fetchPrices} disabled={refreshing} aria-label="Refresh prices">
@@ -331,7 +353,7 @@ const MultiChainPriceFeed = () => {
         {arbitrageOpportunities.length > 0 ? (
           <div className="opportunities-list">
             {arbitrageOpportunities.map((opportunity, index) => (
-              <div key={index} className="opportunity-card">
+              <div key={index} className={`opportunity-card ${newOpportunities.includes(opportunity.id) ? "new-opportunity" : ""}`}>
                 <h3>Opportunity #{index + 1}</h3>
                 <p>
                   Buy {opportunity.bnbAmount.toFixed(6)} BNB on <span className="chain-buy">{opportunity.buyChain.name}</span> at{" "}
@@ -341,7 +363,7 @@ const MultiChainPriceFeed = () => {
                 <div className="opportunity-details">
                   <div className="detail">
                     <span className="label">Trade Amount:</span>
-                    <span className="value trade-amount-value">${tradeAmount.toLocaleString()}</span>
+                    <span className="value trade-amount-value">${opportunity.fees.fundAmount.toFixed(6)}</span>
                   </div>
                   <div className="detail">
                     <span className="label">BNB Amount:</span>
@@ -349,7 +371,7 @@ const MultiChainPriceFeed = () => {
                   </div>
                   <div className="detail">
                     <span className="label">Buy Total:</span>
-                    <span className="value">${tradeAmount.toLocaleString()}</span>
+                    <span className="value">${tradeAmount.toFixed(6)}</span>
                   </div>
                   <div className="detail">
                     <span className="label">Sell Total:</span>
