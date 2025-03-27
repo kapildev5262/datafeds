@@ -1,0 +1,129 @@
+.dex-price-tracker {
+  max-width: 1000px;
+  margin: 0 auto;
+  font-family: Arial, sans-serif;
+  background-color: #1e1e2f;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  color: #e0e0e0;
+}
+
+.dex-price-tracker-header {
+  background-color: #121219;
+  color: #ffffff;
+  padding: 15px;
+  text-align: center;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+
+.dex-price-tracker-header h1 {
+  margin: 0;
+  font-size: 1.5em;
+  color: #ffffff;
+}
+
+.dex-price-tracker-loading, 
+.dex-price-tracker-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 50px;
+  text-align: center;
+  background-color: #1e1e2f;
+  color: #e0e0e0;
+}
+
+.spinner {
+  border: 4px solid #444;
+  border-top: 4px solid #3498db;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.network-section {
+  margin: 20px;
+  background-color: transparent;
+  border-radius: 8px;
+  border: 1px solid #333;
+}
+
+.network-section h2 {
+  background-color: #121219;
+  color: #ffffff;
+  padding: 10px;
+  margin: 0;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  font-size: 1.2em;
+}
+
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+table thead {
+  background-color: #121219;
+}
+
+table th {
+  background-color: #121219;
+  color: #ffffff;
+  font-weight: bold;
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #333;
+}
+
+table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #333;
+  color: #e0e0e0;
+}
+
+table tr:nth-child(even) {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+table tr:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.error-text {
+  color: #ff6b6b;
+  font-weight: bold;
+}
+
+button {
+  display: block;
+  margin: 20px auto;
+  padding: 10px 20px;
+  background-color: #4a4a6a;
+  color: #ffffff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:disabled {
+  background-color: #2c2c3a;
+  color: #777;
+  cursor: not-allowed;
+}
+
+button:hover:not(:disabled) {
+  background-color: #5a5a7a;
+}

@@ -10,12 +10,24 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@swapkit/sdk": "^2.2.25",
+    "@uniswap/sdk-core": "^7.7.2",
+    "@uniswap/smart-order-router": "^4.20.10",
+    "@uniswap/v2-sdk": "^4.15.2",
+    "axios": "^1.8.4",
+    "d3": "^7.9.0",
+    "dotenv": "^16.4.7",
     "ethers": "^6.13.5",
+    "lucide-react": "^0.483.0",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "recharts": "^2.15.1",
+    "sushi": "^5.0.29",
+    "viem": "^2.23.15"
   },
   "devDependencies": {
     "@eslint/js": "^9.21.0",
+    "@shadcn/ui": "^0.0.4",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",
     "@vitejs/plugin-react": "^4.3.4",
